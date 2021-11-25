@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+
+  api:
+    image: mriisoft/obackup-api:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:4431
+
+      - WEBAPI_URL=https://localhost:4431
+      - WEBCLIENT_URL=https://localhost:4432
+      
+      # disable cors policy, default: false;
+      - DISABLE_CORS=true
+      
+      # database type:
+      ## 1 - PostgreSQL
+      ## 2 - SQLServer
+      - DB_TYPE=1
+      
+      # database host
+      - DB_HOST=postgres-db
+      
+      # database port, only for PostgreSQL
+      - DB_PORT=5432
+      
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=admin
+      
+      - JWT_USERNAME=admin
+      - JWT_PASSWORD=admin
+    ports:
+      - "4431:4431"
+    volumes:
+      - ./obackup-docker-data/obackup:/opt/MriiSoft/OBackup
+    depends_on:
+      - "postgres-db"      
+
+  webclient:
+    image: mriisoft/obackup-ui:latest
+    depends_on:
+      - api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:4432
+
+      - WEBAPI_URL=https://localhost:4431
+      - WEBCLIENT_URL=https://localhost:4432
+
+    ports:
+      - "4432:4432"
+    volumes:
+      - ./obackup-docker-data/obackup:/opt/MriiSoft/OBackup
+    depends_on:
+      - "api"      
+      
+  postgres-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./obackup-docker-data/postgres-data:/var/lib/postgresql/data
