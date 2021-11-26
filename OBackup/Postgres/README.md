@@ -54,7 +54,6 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=admin
       
-      #- JWT_SECRET_KEY=pxapFexT8xdrKCfv # Secret for JWT token
       - JWT_USERNAME=admin
       - JWT_PASSWORD=admin
     ports:
